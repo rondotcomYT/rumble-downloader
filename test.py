@@ -35,7 +35,7 @@ if chunklist_code == 404 or dvr_code == 404:
     if requests.get(dvr).status_code == 200:
         video_url = video_url[:video_url.rfind(".")] + ".rec" + video_url[video_url.rfind("."):]
         print(video_url)
-    chunk_size = 1024
+    chunk_size = 64
     r = requests.get(video_url, stream=True)
     with open("video.mp4", "wb") as f:
         for chunk in tqdm(r.iter_content(chunk_size=chunk_size)):
@@ -50,5 +50,5 @@ elif chunklist_code == 200:
     with open("video.ts", 'wb') as f:
         for segment in tqdm(m3u8_playlist.data['segments']):
             url = segment['uri']
-            r = requests.get(thing + url)
+            r = requests.get(thing + url, stream=True)
             f.write(r.content)
