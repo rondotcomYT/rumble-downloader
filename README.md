@@ -1,2 +1,1 @@
-# Rumblr
-Downloads videos and livestreams from Rumble.com
+rumblr - download videos from rumble.com
