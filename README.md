@@ -1,2 +1,2 @@
-# rumble-downloader
-Downloads videos from Rumble.com
+# Rumblr
+Downloads videos and livestreams from Rumble.com
