@@ -17,6 +17,7 @@ html = BeautifulSoup(requests.get(input_url).content, "html.parser")
 base = "https://rumble.com/embedJS/u3/?request=video&ver=2&v="
 embedJS = base + str(html.find("link", rel="alternate"))[92:].split("%2F")[0]
 json = json.loads(requests.get(embedJS).content)
+video_id = str(json["l"])[1:].split("-", 1)[0]
 
 if str(json["livestream_has_dvr"]) == "True" and str(json["live_placeholder"]) != "True":
 
@@ -32,7 +33,15 @@ if str(json["livestream_has_dvr"]) == "True" and str(json["live_placeholder"]) !
     ts_base = playlist[i].rsplit("/", 1)[0] + "/"
     chunklist = m3u8.loads(requests.get(playlist[i]).text)
 
-    with open("video.ts", 'wb') as f:
+    thumbnail = input("Thumbnail? [Y/N]: ")
+    while (thumbnail.lower() != "y") and (thumbnail.lower() != "n"):
+        print("Invalid Response")
+        thumbnail = input("Thumbnail?: ")
+
+        with open(video_id + ".jpg", "wb") as f:
+            f.write(requests.get(json["i"]).content)
+
+    with open(video_id + "_" + resolution + ".ts", 'wb') as f:
         for segment in tqdm(chunklist.data['segments']):
             url = segment['uri']
             r = requests.get(ts_base + url, stream=True)
@@ -44,7 +53,17 @@ elif str(json["livestream_has_dvr"]) != "True":
         print("Invalid Resolution")
         resolution = input("Resolution: ")
 
+    thumbnail = input("Thumbnail? [Y/N]: ")
+    while (thumbnail.lower() != "y") and (thumbnail.lower() != "n"):
+        print("Invalid Response")
+        thumbnail = input("Thumbnail?: ")
+
+    if thumbnail.lower() == "y":
+        with open(video_id + ".jpg", "wb") as f:
+            f.write(requests.get(json["i"]).content)
+
     r = requests.get(json["ua"]["mp4"][resolution]["url"], stream=True)
-    with open("video.mp4", "wb") as f:
+    with open(video_id + "_" + resolution + ".mp4", "wb") as f:
         for chunk in tqdm(r.iter_content(chunk_size=64)):
             f.write(chunk)
+            
